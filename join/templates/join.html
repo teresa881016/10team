@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+    <title>회원가입하기</title>
+    <!-- 주석 단축키 ctrl + / -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dongle&family=Noto+Sans+KR:wght@300&display=swap');
+
+        * {
+            /* 폰트 아직 고민중 */
+            font-family: 'Dongle', sans-serif;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .mytitle {
+            background-color: green;
+
+            width: 300px;
+            height: 200px;
+
+            border-radius: 10px;
+            color: white;
+
+            text-align: center;
+
+            padding: 30px 0px 0px 0px;
+
+            background-image: url('https://blog.kakaocdn.net/dn/cuHBo4/btrjlPTOdJA/3CSYzDAo0mCITHScRzRzpK/img.jpg');
+            background-position: center;
+            background-size: cover;
+        }
+
+        .wrap {
+            width: 300px;
+            margin: 20px auto 0px auto;
+        }
+    </style>
+    <script>
+        // 회원가입에 필요한 정보를 담는다.
+        function join_order() {
+            let name = $("#name").val()
+            let id = $('#id').val()
+            let pw = $('#pw').val()
+            let pw2 = $('#pw2').val()
+            let nickname = $('#nickname').val()
+
+            let formData = new FormData();
+            formData.append("name_give", name)
+            formData.append("id_give", id)
+            formData.append("pw_give", pw)
+            formData.append("pw2_give", pw2)
+            formData.append("nickname_give", nickname)
+
+            fetch('/join', { method: "POST", body: formData }).then((res) => res.json()).then((data) => {
+                console.log(data)
+                window.location.reload()
+            });
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="mytitle">
+            <h1>회원가입 페이지</h1>
+
+        </div>
+        <h5>빈칸을 작성해 주세요</h5>
+        <p>이름 : <input id="name" type="text" /></p>
+        <p>ID : <input id="id" type="text" /></p>
+        <p>PW : <input id="pw" type="password" /></p>
+        <p>PW2 : <input id="pw2" type="password" /></p>
+        <p>닉네임 : <input id="nickname" type="text" /></p>
+        <button onclick="join_order()" type="button" class="btn btn-warning mybtn">회원가입하기</button>
+        {% if error_message %}
+        <p style="color: red;">{{ error_message }}</p>
+        {% endif %}
+
+    </div>
+</body>
+
+</html>
