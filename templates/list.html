@@ -50,9 +50,25 @@
             // 마커가 지도 위에 표시되도록 설정합니다
             marker.setMap(map);
         }
-
     </script>
-
+    <table>
+        <thead>
+            <tr>
+                <th>  </th>
+                <th>주차장 정보</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for index in range(x_values|length) %}
+            <tr>
+                <td>{{ name_values[index] }}</td>
+                <td>{{ addr_values[index] }}</td>
+                <td>{{ fee_values[index] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
     {% else %}
     <script>
         var container = document.getElementById('map');
