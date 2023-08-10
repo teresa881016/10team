@@ -4,7 +4,10 @@ import pandas as pd
 from openpyxl import Workbook
 
 #파일 불러오기
-data_parking = pd.read_excel("C:/Users/bug68/OneDrive/바탕 화면/sparta2/08.beta/주정차문화지킴이_전국공영주차장정보.xlsx")
+# 재익
+data_parking = pd.read_excel("c:/Users/JJI/Desktop/sparta/projects/mars/주정차문화지킴이_전국공영주차장정보.xlsx")
+# 현욱
+# data_parking = pd.read_excel("C:/Users/bug68/OneDrive/바탕 화면/sparta2/08.beta/주정차문화지킴이_전국공영주차장정보.xlsx")
 # 사람마다 엑셀 파일 위치 다름!!!
 data_parking.rename(columns={'주차장명':'name', '경도':'x', '위도':'y', '주차장지번주소':'old_addr', '주차장도로명주소':'new_addr', '주차구획수':'lots_num', '요금정보':'is_free', '관리기관명':'owner',
     '지역구분':'doe', '지역구분_sub':'si', '지역중심좌표(X좌표)':'center_x', '지역중심좌표(Y좌표)':'center_y'}, inplace= True)
