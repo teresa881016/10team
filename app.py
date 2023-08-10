@@ -1,7 +1,16 @@
-from flask import Flask, render_template, request, jsonify, flash, session
-app = Flask(__name__)
-
+from flask import Flask, render_template, request, jsonify, flash, session, redirect, url_for
 from pymongo import MongoClient
+import pandas as pd
+from openpyxl import Workbook
+
+#파일 불러오기
+data_parking = pd.read_excel("C:/Users/bug68/OneDrive/바탕 화면/sparta2/08.beta/주정차문화지킴이_전국공영주차장정보.xlsx")
+# 사람마다 엑셀 파일 위치 다름!!!
+data_parking.rename(columns={'주차장명':'name', '경도':'x', '위도':'y', '주차장지번주소':'old_addr', '주차장도로명주소':'new_addr', '주차구획수':'lots_num', '요금정보':'is_free', '관리기관명':'owner',
+    '지역구분':'doe', '지역구분_sub':'si', '지역중심좌표(X좌표)':'center_x', '지역중심좌표(Y좌표)':'center_y'}, inplace= True)
+data_parking = data_parking.drop(['center_x', 'center_y', 'owner'], axis=1)
+
+app = Flask(__name__)
 client = MongoClient('mongodb+srv://sparta:test@cluster0.bko1xj3.mongodb.net/?retryWrites=true&w=majority')
 db = client.dbsparta
 
@@ -9,9 +18,23 @@ db = client.dbsparta
 app.secret_key = 'secret_key'
 
 # 메인 홈페이지 출력
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('login.html')
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    filtered_data = None
+
+    if request.method == 'POST':
+        search_keyword = request.form['search_keyword']
+        filtered_data = data_parking[data_parking['old_addr'].apply(lambda x: search_keyword in str(x))]
+        x_values = filtered_data['x'].tolist()
+        y_values = filtered_data['y'].tolist()
+        name_values = filtered_data['name'].tolist()  
+
+        return render_template('list.html', x_values=x_values, y_values=y_values, name_values=name_values)
+       
+    return render_template('list.html')
 
 # 검색 페이지 출력
 @app.route('/list')

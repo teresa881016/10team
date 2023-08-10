@@ -8,148 +8,94 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
     <title>키워드로 장소검색하기</title>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 
-
-<SCRIPT>
-    //검색
-    function search() {
-        let keyword = $('#search-input2').val()
-        let replaceKeyword = keyword.replaceAll(' ', '+')
-        window.location.href = "/list?location=" + replaceKeyword
-    }
-
-</SCRIPT>
-
 <body>
-    <div id="map" style="width:700px;height:350px;"></div>
-
+    <div id="map" style="width:500px;height:400px;"></div>
     <script type="text/javascript"
-        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=53867b3a8191931a0701833c2998046d&libraries=services"></script>
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=02374b73a41da84151f322de888e3165"></script>
+    <!-- 사람마다 카카오톡 API 코드 다름! -->
+    {% if x_values %}
     <script>
-        headers = { Authorization: 'KakaoAK 605d65ee439c3ef2f8fd6681db992f0e' }
-        var searchAddr = "{{ keyword }}"
-        // 마커를 클릭하면 장소명을 표출할 인포윈도우 입니다
-        var infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
+        let xCenter = '{{x_values[0] | safe}}'
+        let yCenter = '{{y_values[0] | safe}}'
+        var container = document.getElementById('map');
+        var options = {
+            center: new kakao.maps.LatLng(yCenter, xCenter),
+            level: 3
+        };
+        var map = new kakao.maps.Map(container, options);
+        var xValue_list = JSON.parse('{{ x_values|tojson|safe }}');
+        var yValue_list = JSON.parse('{{ y_values|tojson|safe }}');
+        var name_list = JSON.parse('{{ name_values|tojson|safe }}');// 추후에 구현 예정
+        var listLength = xValue_list.length;
+        for (let i = 0; i < listLength; i++) {
+            var xValue = xValue_list[i];
+            var yValue = yValue_list[i];
+            var nameValue = name_list[i];
 
-        var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-            mapOption = {
-                center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
-                level: 3 // 지도의 확대 레벨
-            };
+            var markerPosition = new kakao.maps.LatLng(yValue, xValue);
 
-        // 지도를 생성합니다
-        var map = new kakao.maps.Map(mapContainer, mapOption);
+            // 마커를 생성합니다
+            var marker = new kakao.maps.Marker({
+                position: markerPosition
+            });
 
-        // 장소 검색 객체를 생성합니다
-        var ps = new kakao.maps.services.Places();
-
-        // 키워드로 장소를 검색합니다
-        ps.keywordSearch(searchAddr, placesSearchCB);
-
-        // 키워드 검색 완료 시 호출되는 콜백함수 입니다
-        function placesSearchCB(data, status, pagination) {
-            
-            if (status === kakao.maps.services.Status.OK) {
-
-                // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
-                // LatLngBounds 객체에 좌표를 추가합니다
-                var bounds = new kakao.maps.LatLngBounds();
-
-                for (var i = 0; i < data.length; i++) {
-                    displayMarker(data[i]);
-                    bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
-                }
-
-                // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
-                map.setBounds(bounds);
-                var position = map.getCenter();
-                var centerLat = position.getLat()
-                var centerLng = position.getLng()
-
-
-                // 중심 좌표 변환
-                fetch("/data_get", { method: "GET" })
-                    .then(response => response.json())
-                    .then((data) => {
-                        // 근처 주차장 목록
-                        const res = data['result'];
-                        const result = res.json();
-
-                        // $('#station-list').empty();
-
-                        for (const e of result) {
-
-                            const information = data['result'];
-                            information.forEach((info) => {
-                                const infoName = info.name;
-                                const infoAddress = info.old_addr;
-                                const infoPrice = info.is_free;
-                                const lon = info.x;
-                                const lat = info.y;
-
-                                makeList(infoName, infoAddress, infoPrice, lon, lat);
-                            });
-                        }
-                    })
-
-            }
+            // 마커가 지도 위에 표시되도록 설정합니다
+            marker.setMap(map);
         }
+
+    </script>
+
+    {% else %}
+    <script>
+        var container = document.getElementById('map');
+        var options = {
+            center: new kakao.maps.LatLng(33.450701, 126.570667),
+            level: 3
+        };
+        var map = new kakao.maps.Map(container, options);
+    </script>
+    {% endif %}
+
+    <!-- 검색 폼 -->
+    <form method="post" action="/">
+        <input type="text" name="search_keyword" placeholder="검색어를 입력하세요">
+        <input type="submit" value="검색">
+    </form>
+
+    <script>
         // 로그인 확인 후 메인 페이지 표시
         document.addEventListener('DOMContentLoaded', func);
-       function func(){
-        fetch('/check', { method: "GET"}).then(response => response.json()).then(data => {
-            let member_data = data["result"]
-            console.log(member_data)
-       })}
+        function func() {
+            fetch('/check', { method: "GET" }).then(response => response.json()).then(data => {
+                let member_data = data["result"]
+                console.log(member_data)
+            })
+        }
 
         // 로그아웃 함수
-        function log_out(){
-        fetch('/logout', { method: "POST"}).then(data => {
-            if (data){
-                console.log(data)
-                alert("로그아웃 되었습니다.")
-            window.location.href = '/login'
+        function log_out() {
+            fetch('/logout', { method: "POST" }).then(data => {
+                if (data) {
+                    console.log(data)
+                    alert("로그아웃 되었습니다.")
+                    window.location.href = '/login'
                 }
 
             })
         }
-
-
-        // 지도에 마커를 표시하는 함수입니다
-        function displayMarker(place) {
-
-            // 마커를 생성하고 지도에 표시합니다
-            var marker = new kakao.maps.Marker({
-                map: map,
-                position: new kakao.maps.LatLng(place.y, place.x)
-            });
-
-            // 마커에 클릭이벤트를 등록합니다
-            kakao.maps.event.addListener(marker, 'click', function () {
-                // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
-                infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
-                infowindow.open(map, marker);
-            });
-        }
-
     </script>
-    <!-- 검색창 -->
-    <div class="input-group mb-3 search-input">
-        <input id="search-input2" type="text" class="form-control" placeholder="검색" aria-label="Username"
-            aria-describedby="basic-addon1">
-    </div>
-    <button onclick="search()" id="submit-btn" class="btn btn-secondary" type="submit">검색</button>
-    </div>
 
-    <!-- 리스트를 감싸는 div -->
+
+
     <div class="container">
         <!-- 리스트 영역 -->
         <div id="list">
             <div class="list-group" id="station-list">
-            <button onclick = "log_out()">로그아웃하기</button>
+                <button onclick="log_out()">로그아웃하기</button>
             </div>
         </div>
     </div>
