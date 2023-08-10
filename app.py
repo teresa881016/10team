@@ -34,8 +34,10 @@ def home():
         x_values = filtered_data['x'].tolist()
         y_values = filtered_data['y'].tolist()
         name_values = filtered_data['name'].tolist()  
+        addr_values = filtered_data['old_addr'].tolist() 
+        fee_values = filtered_data['is_free'].tolist() 
 
-        return render_template('list.html', x_values=x_values, y_values=y_values, name_values=name_values)
+        return render_template('home.html', x_values=x_values, y_values=y_values, name_values=name_values, addr_values=addr_values, fee_values=fee_values)
        
     return render_template('list.html')
 
