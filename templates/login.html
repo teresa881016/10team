@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <title>Document</title>
+    <!-- 주석 단축키 ctrl + / -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dongle&family=Noto+Sans+KR:wght@300&display=swap');
+
+        * {
+            /* 폰트 아직 고민중 */
+            font-family: 'Dongle', sans-serif;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .mytitle {
+            background-color: green;
+
+            width: 300px;
+            height: 200px;
+
+            border-radius: 10px;
+            color: white;
+
+            text-align: center;
+
+            padding: 30px 0px 0px 0px;
+
+            background-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Foy13q%2FbtsqLwzoMPO%2FU2D5ANHrSGKq6AnkkGmYG0%2Fimg.jpg');
+            background-position: center;
+            background-size: cover;
+        }
+
+        .wrap {
+            width: 300px;
+            margin: 20px auto 0px auto;
+        }
+    </style>
+    <!-- <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dongle&display=swap');
+
+        ​{
+            /* 폰트 아직 고민중 */
+            font-family: 'Dongle', sans-serif;
+        }
+
+        ​ .mytitle {
+            background-color: green;
+            width: 300px;
+            height: 200px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            ​padding: 30px 0px 0px 0px;
+            background-image: url('https://www.ancient-origins.net/sites/default/files/field/image/Agesilaus-II-cover.jpg');
+            background-position: center;
+            background-size: cover;
+        }
+
+        ​ .wrap {
+            width: 300px;
+            margin: 20px auto 0px auto;
+        }
+    </style> -->
+    <script>
+        $(document).ready(function () {
+            $('#myid').empty()
+            $('#mypw').empty()
+        });
+
+        // 회원가입 페이지 이동
+        function signup(){
+            window.location.href = '/join'
+        }
+
+        // 로그인 기능
+        function log_in() {
+            let username = $('#myid').val()
+            console.log(username)
+            let password = $('#mypw').val()
+            console.log(password)
+            let formData = new FormData();
+            formData.append('username_give', username);
+            formData.append('password_give', password);
+            fetch('/login', { method: "POST", body: formData}).then(response => response.json()).then(data => {
+                // if( data === undefined) {return undefined;}
+                alert(data['msg'])
+                if (data['msg'] == "로그인이 되었습니다.") {
+                    window.location.href = '/list'
+                }
+                else {
+                    window.location.reload()
+                }
+            });
+            
+        }
+    </script>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="mytitle">
+            <h1>로그인 페이지</h1>
+            <h5>아이디, 비밀번호를 입력하세요</h5>
+        </div>
+        <p>ID : <input id = "myid" type="text" /></p>
+        <p>PW : <input id = "mypw" type="password" /></p>
+        <button onclick = "log_in()">로그인하기</button>
+        <button onclick = "signup()">회원가입하기</button>
+    </div>
+</body>
+​
+
+</html>
