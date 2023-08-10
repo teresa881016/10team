@@ -45,13 +45,39 @@
     </style>
     <script>
         // 회원가입에 필요한 정보를 담는다.
-        function join_order() {
+        function join_order() {  
+            let id_check = /^[a-zA-Z0-9]{4,12}$/
+            let pw_check = /^[a-zA-Z0-9]{4,20}$/
+            let name_check = /^[가-힣a-zA-Z]{2,15}$/
+
+
             let name = $("#name").val()
             let id = $('#id').val()
             let pw = $('#pw').val()
             let pw2 = $('#pw2').val()
             let nickname = $('#nickname').val()
 
+            if (name == "" || id == "" || pw == "" || pw2 == "" || nickname == ""){
+                alert("입력되지 않은 정보가 있습니다.")
+                return false
+            }
+            else if (!name_check.test(name)) {
+                alert("이름 형식에 맞지 않습니다. 2글자 이상 한글과 영어로 입력하세요")
+                return false 
+            }
+            else if(!id_check.test(id) ){
+                alert("아이디 형식에 맞지 않습니다.대소문자, 숫자로 구성하고 4~12자리여야 합니다.")
+                return false
+            }
+            else if(!pw_check.test(pw)){
+                alert("비밀번호 형식에 맞지 않습니다. 대소문자, 숫자로 구성하고 4~20자리여야 합니다.")
+                return false
+            }
+            else if(pw != pw2){
+                alert("비밀번호가 일치하지 않습니다. 다시 입력하세요")
+                return false
+            }
+            
             let formData = new FormData();
             formData.append("name_give", name)
             formData.append("id_give", id)
@@ -60,10 +86,11 @@
             formData.append("nickname_give", nickname)
 
             fetch('/join', { method: "POST", body: formData }).then((res) => res.json()).then((data) => {
-                console.log(data)
+                alert(data["msg"]);
                 window.location.reload()
             });
         }
+        
 
     </script>
 </head>
@@ -72,7 +99,6 @@
     <div class="wrap">
         <div class="mytitle">
             <h1>회원가입 페이지</h1>
-
         </div>
         <h5>빈칸을 작성해 주세요</h5>
         <p>이름 : <input id="name" type="text" /></p>
@@ -81,10 +107,6 @@
         <p>PW2 : <input id="pw2" type="password" /></p>
         <p>닉네임 : <input id="nickname" type="text" /></p>
         <button onclick="join_order()" type="button" class="btn btn-warning mybtn">회원가입하기</button>
-        {% if error_message %}
-        <p style="color: red;">{{ error_message }}</p>
-        {% endif %}
-
     </div>
 </body>
 
