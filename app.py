@@ -14,7 +14,7 @@ data_parking.rename(columns={'주차장명':'name', '경도':'x', '위도':'y', 
 data_parking = data_parking.drop(['center_x', 'center_y', 'owner'], axis=1)
 
 app = Flask(__name__)
-client = MongoClient('mongodb+srv://sparta:test@cluster0.bko1xj3.mongodb.net/?retryWrites=true&w=majority')
+client = MongoClient('')
 db = client.dbsparta
 
 # create a session object
